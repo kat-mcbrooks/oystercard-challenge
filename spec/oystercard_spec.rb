@@ -31,14 +31,22 @@ describe Oystercard do
     end
 
     it 'can touch in and will then be in journey' do
+      min_fare = (Oystercard::MIN_FARE) #syntax for accessing constant outside a class?
+      subject.top_up(min_fare)
       subject.touch_in
       expect(subject).to be_in_journey
     end 
 
     it 'can touch out and will then not be in journey' do
+      subject.top_up(1)
       subject.touch_in
       subject.touch_out
       expect(subject).to_not be_in_journey
     end
+
+    it 'raises error when attempting to touch in with balance under minimum fare' do
+      expect { subject.touch_in }.to raise_error("Insufficient funds")
+    end
+
   end
 end

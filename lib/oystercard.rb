@@ -1,6 +1,7 @@
 class Oystercard
   attr_reader :balance # we use this instead of a getter method (def @balance end) so that we can access/get the balance attribute outside the class e,g, in tests 
   MAX_BALANCE = 90
+  MIN_FARE = 1
 
   def initialize
     @balance = 0
@@ -21,6 +22,7 @@ class Oystercard
   end
 
   def touch_in
+    raise "Insufficient funds" unless balance >= MIN_FARE 
     @tracker = true
   end
 
