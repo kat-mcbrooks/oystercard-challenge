@@ -24,4 +24,21 @@ describe Oystercard do
       expect{ subject.deduct(10) }.to change{ subject.balance }.by(-10)
     end
   end
+
+  describe 'tracking if card is in journey or not' do
+    it 'begins not in_journey' do
+      expect(subject).not_to be_in_journey
+    end
+
+    it 'can touch in and will then be in journey' do
+      subject.touch_in
+      expect(subject).to be_in_journey
+    end 
+
+    it 'can touch out and will then not be in journey' do
+      subject.touch_in
+      subject.touch_out
+      expect(subject).to_not be_in_journey
+    end
+  end
 end

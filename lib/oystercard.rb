@@ -4,6 +4,7 @@ class Oystercard
 
   def initialize
     @balance = 0
+    @tracker = false
   end
 
   def top_up(value) 
@@ -14,4 +15,17 @@ class Oystercard
   def deduct(value)
     @balance -= value
   end
+
+  def in_journey?
+    @tracker
+  end
+
+  def touch_in
+    @tracker = true
+  end
+
+  def touch_out
+    @tracker = false
+  end
+
 end
