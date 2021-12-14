@@ -28,6 +28,7 @@ class Oystercard
 
   def touch_out
     @tracker = false
+    deduct(1)
   end
 
 end
