@@ -58,7 +58,7 @@ Manually testing the code in irb
 katbrooks@Kats-Air oystercard % irb -r './lib/oystercard'
 3.0.2 :001 > my_oyster = Oystercard.new
  => #<Oystercard:0x000000012080f2e8 @balance=0> 
-3.0.2 :002 > my_oyster.top_up(5)
+3.0.2 :002 > 
  => 5 
 3.0.2 :003 > my_oyster.balance
  => 5 
@@ -66,3 +66,17 @@ katbrooks@Kats-Air oystercard % irb -r './lib/oystercard'
  => 15 
 3.0.2 :006 > my_oyster.balance
  => 15 
+ 3.0.2 :006 > my_oyster.top_up(90)
+ => 90 
+3.0.2 :007 > my_oyster.top_up(1)
+/Users/katbrooks/Projects/oystercard/lib/oystercard.rb:12:in `top_up': Unable to top up - you have reached your maximum balance of \xC2\xA390. (RuntimeError)
+3.0.2 :010 > my_oyster.in_journey?
+ => true 
+3.0.2 :011 > my_oyster.touch_out
+ => 89 
+3.0.2 :012 > my_oyster.in_journey?
+ => false 
+3.0.2 :013 > my_oyster.balance
+ => 89 
+ 3.0.2 :014 > my_oyster.origin #testing that we know where we've travelled from
+(irb):14:in `<main>': undefined method `origin' for #<Oystercard:0x00000001583005d0 @balance=89, @tracker=false> (NoMethodError)

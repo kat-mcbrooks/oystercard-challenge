@@ -1,5 +1,5 @@
 class Oystercard
-  attr_reader :balance # we use this instead of a getter method (def @balance end) so that we can access/get the balance attribute outside the class e,g, in tests 
+  attr_reader :balance, :entry_station # we use this instead of a getter method (def @balance end) so that we can access/get the balance attribute outside the class e,g, in tests 
   MAX_BALANCE = 90
   MIN_FARE = 1
 
@@ -13,22 +13,25 @@ class Oystercard
     @balance += value 
   end
 
-  def deduct(value)
-    @balance -= value
-  end
-
   def in_journey?
-    @tracker
+    !@entry_station.nil?
   end
 
-  def touch_in
+  def touch_in(station)
     raise "Insufficient funds" unless balance >= MIN_FARE 
     @tracker = true
+    @entry_station = station  
   end
 
   def touch_out
     @tracker = false
     deduct(1)
+    @entry_station = nil
+  end
+
+  #private
+  def deduct(value) #not sure why we want deduct private but not others?
+    @balance -= value
   end
 
 end
