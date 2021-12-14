@@ -5,7 +5,12 @@ describe Oystercard do
   max_balance = Oystercard::MAX_BALANCE # read up on this syntax
   # subject (:oystercard) { Oystercard.new} optional, but would mean all tests below could use oystercard rather than subject i.e. perhaps clearer
   let(:entry_station) {double 'entry station double'}
+  let(:exit_station) {double 'exit station double'}
   
+  it 'has empty list of journeys as default' do
+    expect(subject.journeys).to be_empty
+  end
+
   it 'remembers the entry station after touch in' do
     subject.top_up(min_fare)
     expect(subject.touch_in("King's Cross")).to eq "King's Cross"
@@ -31,23 +36,32 @@ describe Oystercard do
   expect(subject).not_to be_in_journey
   end
 
+  it 'touch in and touch out creates one journey' do
+    subject.top_up(min_fare)
+    subject.touch_in(entry_station)
+    subject.touch_out(exit_station)
+    expect(subject.journeys.count).to eq 1
+  end
+
   describe '#touch_out' do
     it 'charges card' do
       subject.top_up(min_fare)
       subject.touch_in(entry_station)
-      expect{ subject.touch_out }.to change{ subject.balance }.by(-min_fare)
+      expect{ subject.touch_out(exit_station) }.to change{ subject.balance }.by(-min_fare)
     end
 
     it 'after touch_out, card will not be in journey' do
       subject.top_up(min_fare)
       subject.touch_in(entry_station)
-      subject.touch_out
+      subject.touch_out(exit_station)
       expect(subject).to_not be_in_journey
     end
 
-    it 'sets entry_station to nil' do
-    subject.touch_out
-    expect(subject.entry_station).to eq nil
+    it 'stores journey' do
+    subject.top_up(min_fare)
+    subject.touch_in(entry_station)
+    subject.touch_out(exit_station)
+    expect(subject.journeys).to include subject.journey
     end
   end
 
