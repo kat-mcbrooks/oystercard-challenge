@@ -78,5 +78,5 @@ katbrooks@Kats-Air oystercard % irb -r './lib/oystercard'
  => false 
 3.0.2 :013 > my_oyster.balance
  => 89 
- 3.0.2 :014 > my_oyster.origin #testing that we know where we've travelled from
-(irb):14:in `<main>': undefined method `origin' for #<Oystercard:0x00000001583005d0 @balance=89, @tracker=false> (NoMethodError)
+3.0.2 :014 > my_oyster.entry_station # testing that we know where we've travelled from
+(irb):14:in `<main>': undefined method 'entry_station' for #<Oystercard:0x00000001583005d0 @balance=89, @tracker=false> (NoMethodError)
