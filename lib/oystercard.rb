@@ -1,14 +1,13 @@
-require_relative 'journey'
 require_relative 'station'
+require_relative 'journeylog'
 
 class Oystercard
-  attr_reader :balance, :journeys, :currentjourney, :entry_station, :exit_station # we use this instead of a getter method (def @balance end) so that we can access/get the balance attribute outside the class e,g, in tests 
+  attr_reader :balance, :journey_log # we use this instead of a getter method (def @balance end) so that we can run oystercard.balance or oystercard.journeys to see balance and journeys history
   MAX_BALANCE = 90
   MIN_FARE = 1
-  def initialize
+  def initialize(journeylog = JourneyLog.new) #use dependency injection here so that in the tests we can double it. By putting JourneyLog.new here instead of within the method, it means we can pass in a double
     @balance = 0
-    @journeys = [] #array of hashes?
-    @currentjourney = nil
+    @journey_log = journeylog
   end
 
   def top_up(value) 
@@ -16,39 +15,24 @@ class Oystercard
     @balance += value 
   end
 
-  def touch_in(entry_station=nil)
+  def touch_in(station=nil)
     raise "Insufficient funds" unless balance >= MIN_FARE
-    @currentjourney = Journey.new(entry_station: entry_station) 
-    #@journey.entry_station
+    @journey_log.start(station) #runs journeylog class method on an instance of journeylog. This method creates new instance of journey class and adds it to the @log, so touch_in will return @log, which will be one or many instances of journey
   end
 
-  def touch_out(exit_station=nil)
-    @currentjourney.finish(exit_station)
-    deduct(@currentjourney.fare)
-    store_journey
-    @currentjourney
-    @currentjourney = nil
+  def touch_out(station=nil)
+    j = @journey_log.finish(station) #running journeylog finish method on journeylog instance, returns an instance of journey, which we can then run fare on below
+    deduct(j.fare)
   end
   
-  def in_journey? 
-    !@currentjourney.nil?
-  end
   private
-    
-  def store_journey
-    @journeys << {entry_stat: @currentjourney.entry_station, exit_stat: @currentjourney.exit_station}
-  end
 
-  def deduct(value) #not sure why we want deduct private but not others?
+  def deduct(value) #private means method can only be called within the Class
     @balance -= value
   end
 end
 
-p card = Oystercard.new
-p card.top_up(1)
-p card.touch_in("Euston")
-p card.in_journey?
-p card.touch_out("Greenwich")
-p card.journeys
-p card.in_journey? 
-p card.currentjourney
+p oc = Oystercard.new
+p oc.balance
+p oc.touch_out("Euston")
+p oc.journey_log

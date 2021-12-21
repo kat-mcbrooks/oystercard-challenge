@@ -13,8 +13,13 @@ describe Journey do
     expect(subject.fare).to eq penalty_fare
   end
 
+  it "will return journey itself when finishing a journey so that this journey can be " do #walkthrough test has 
+    subject.finish(station)
+    expect(subject.exit_station).to eq(station)
+  end
+
   context 'when given an entry station' do
-  subject { described_class.new(entry_station: station) } #would described_class.new( station) work if we iniitalised with entry_station=nil rather than entry_station: nil?
+  subject { described_class.new(entry_station: station) }
 
     it 'charges penalty if no exit station given' do
       expect(subject.fare).to eq penalty_fare
@@ -24,13 +29,22 @@ describe Journey do
       expect(subject.entry_station).to eq station
     end
 
+    it 'completes journey when journey is finished without an exit station' do
+      subject.finish
+      expect(subject).to be_complete
+    end
+
     context 'and when given an exit station' do
       let(:exitstation) { double("exitstation") }
       before do
         subject.finish(exitstation)
       end
 
-      it 'journey is complete' do # tests that it finishes a journey
+      it 'knows its exit station' do 
+        expect(subject.exit_station).to eq exitstation
+      end
+
+      it 'journey is complete' do
         expect(subject).to be_complete
       end
 
@@ -40,3 +54,4 @@ describe Journey do
     end
   end
 end
+

@@ -1,52 +1,25 @@
 Week 2 challenge of Makers | User requirements:
 
-In order to use public transport
-As a customer
-I want money on my card 
+Oystercard class responsible for: 
+Storing money on card (@balance instance variable)
+Adding money to card (top_up)
+does not allow user to top up above max balance (MAX_BALANCE constant and raise error)
+deducts fare from card (this will call on Journey class' fare method)
+touch in (creates new Journey instance)
+touch out method (calls on Journey's finish method)
+does not allow user to touch_in without MIN_FARE
+charges card on touch_out (so customer pays for journey when its complete)
+can access Journeylog
 
-    - To satisfy this user story, I added a default balance variable via initialize method to every instance of Oystercard class.  
+Journey class responsible for: 
+holds information about one single journey
+calculates fare and knows penalty fare should be charged if journey incomplete (i.e. if either entry or exit station isn't given)
 
-In order to keep using public transport
-As a customer
-I want to add money to my card
+Journeylog class responsible for: 
+Adding individual Journeys to Journeylog which Oystercard should be able to access
 
-    - To satisfy this user story, I added a top_up method with a value argument, which increases the balance of the card.
-
-In order to protect my money
-As a customer
-I don't want to put too much money on my card
-
-In order to pay for my journey
-As a customer
-I need my fare deducted from my card
-
-In order to get through the barriers
-As a customer
-I need to touch in and out
-
-In order to pay for my journey
-As a customer
-I need to have the minimum amount for a single journey
-
-In order to pay for my journey
-As a customer
-I need to pay for my journey when it's complete
-
-In order to pay for my journey
-As a customer
-I need to know where I've travelled from
-
-In order to know where I have been
-As a customer
-I want to see to all my previous trips
-
-In order to know how far I have travelled
-As a customer
-I want to know what zone a station is in
-
-In order to be charged correctly
-As a customer
-I need a penalty charge deducted if I fail to touch in or out
+Station class responsible for: 
+holds information about a station (name and zone)
 
 In order to be charged the correct amount
 As a customer
@@ -80,3 +53,23 @@ katbrooks@Kats-Air oystercard % irb -r './lib/oystercard'
  => 89 
 3.0.2 :014 > my_oyster.entry_station # testing that we know where we've travelled from
 (irb):14:in `<main>': undefined method 'entry_station' for #<Oystercard:0x00000001583005d0 @balance=89, @tracker=false> (NoMethodError)
+
+p card = Oystercard.new
+p "here"
+p card.top_up(1)
+p card.touch_in("Euston")
+#p card.currentjourney
+p card.in_journey?
+p card.touch_out("Greenwich")
+#p card.currentjourney
+p card.journeys
+p card.in_journey? 
+#p card.currentjourney
+
+
+p journey1 = Journey.new(entry_station: "Euston")
+p journey1.complete?
+p journey1.finish("Greenwich")
+
+p journey1.fare
+p journey1.complete?

@@ -2,26 +2,18 @@ require 'oystercard'
 
 describe Oystercard do 
   min_fare = Oystercard::MIN_FARE #syntax for accessing constant outside a class?
-  max_balance = Oystercard::MAX_BALANCE # read up on this syntax
-  # subject (:oystercard) { Oystercard.new} optional, but would mean all tests below could use oystercard rather than subject i.e. perhaps clearer
+  max_balance = Oystercard::MAX_BALANCE 
   let(:entry_station) {double 'Euston'}
   let(:exit_station) {double 'Greenwich'}
-  #let(:journey) { {entry_stat: entry_station, exit_stat: exit_station} } #try to work this out. why we use it and why it helps below, why its valid to use it 
-  #let(:journeynew) { Journey.new(entry_station: entry_station)}
-  it 'has empty list of journeys as default' do
-    expect(subject.journeys).to be_empty
-  end
+  let(:journey) {double 'journey', fare: min_fare } 
+  let(:journeylog){double 'journeylog', start: [journey], finish: journey}
+  subject { described_class.new(journeylog) }
 
   it 'has balance of 0 by default' do
     expect(subject.balance).to eq (0) 
   end
 
-  it 'is not #in_journey  by default' do
-    expect(subject).not_to be_in_journey
-  end
-
-  describe '#top_up' do # tests for the top_up method can go under this describe? 
-    # it { is_expected.to respond_to(:top_up).with(1).argument } THIS TEST IS NOW REDUNDANT AS WE TEST THIS VIA THE BELOW
+  describe '#top_up' do 
     it 'changes card balance with a value' do
       expect{ subject.top_up(max_balance) }.to change{ subject.balance }.by(max_balance)
     end
@@ -32,31 +24,19 @@ describe Oystercard do
     end
   end
 
-  it 'touch in and touch out creates one journey' do
-    subject.top_up(min_fare)
-    subject.touch_in(entry_station)
-    subject.touch_out(exit_station)
-    expect(subject.journeys.count).to eq 1
-  end
-
   describe '#touch_out' do
-      before do 
-        subject.top_up(min_fare)
-        subject.touch_in(entry_station)
-      end
-      it 'charges card' do
-      expect{ subject.touch_out(exit_station) }.to change{ subject.balance }.by(-min_fare)
-      end
+    before do 
+      subject.top_up(min_fare)
+      subject.touch_in(entry_station)
+    end
+    it 'charges card with journey fare' do
+    expect{ subject.touch_out(exit_station) }.to change{ subject.balance }.by(-journey.fare)
+    end
 
-      it 'after touch_out, card will not be in journey' do
-        subject.touch_out(exit_station)
-        expect(subject).to_not be_in_journey
-      end
-
-      it 'stores journey' do
-      subject.touch_out(exit_station)
-      expect(subject.journeys).to include {entry stat: entry_station, exit_stat: exit_station} #or include subject.journy? not sure about this test
-      end
+    it 'tells journey log which station was touched out' do
+    expect(journeylog).to receive(:finish).with(exit_station)
+    subject.touch_out(exit_station)
+    end
   end
 
   describe '#touch_in' do
@@ -65,15 +45,13 @@ describe Oystercard do
     end
 
     context 'with sufficient funds' do 
-      #let(:journey) { double('journey double') } #not sure about this double, not sure if it even a viable use of a double. Does it make the tests pointless. Got a bit lost
       before do 
        subject.top_up(min_fare)
-       subject.touch_in(entry_station)
       end 
-      it 'will be in_journey' do #is this sufficient test coverage? Do I need to test anything else to test touching in with sufficient funds?
-       # subject.top_up(min_fare)
-       # subject.touch_in(entry_station)
-        expect(subject).to be_in_journey
+
+      it 'knows what station it has touched in at' do
+        expect(journeylog).to receive(:start).with(entry_station)   
+        subject.touch_in(entry_station)
       end
     end
   end
