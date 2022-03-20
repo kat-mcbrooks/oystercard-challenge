@@ -3,8 +3,8 @@ require 'journeylog'
 describe JourneyLog do
   let(:journey) { double :journey }
   let(:station) { double :station }  
-  let(:journey_class) {double :journey_class, new: journey}
-  subject {described_class.new(journey_class)}
+  let(:journey_class) {double :journey_class, new: journey} #use the let method to set the double we have created to the variable :journey_class. Then used the double method to set new method to return journey
+  subject {described_class.new(journey_class)} #because we've used dependency injection to inject JourneyLog class with Journey
 
   describe '#start journey' do
     it 'starts a journey' do #we are testing how journeylog class interacts with journey class without depending on journey class to work(using double)
